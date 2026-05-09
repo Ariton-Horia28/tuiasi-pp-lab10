@@ -16,8 +16,6 @@ class EliteFactory : Factory {
      * @return Un handler de tip CEO
      */
     override fun createHandler(): Handler {
-        // TODO("De implementat")
-        // Returnați un CEOHandler() nou
-        TODO("De implementat: instanțiază și returnează un CEOHandler")
+       return CEOHandler()
     }
 }

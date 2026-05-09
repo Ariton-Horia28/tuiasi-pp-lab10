@@ -24,35 +24,28 @@ import kotlinx.coroutines.launch
  * @return Map cu perechile n → n!
  */
 suspend fun computeFactorials(values: List<Int>): Map<Int, Long> = coroutineScope {
-    // TODO("De implementat")
-    // Pași de urmat:
-    //
-    // 1. Creați un canal de lucru: val canal = Channel<Int>(capacity = values.size)
-    //
-    // 2. Trimiteți toate valorile în canal și închideți-l:
-    //    launch {
-    //        for (v in values) canal.send(v)
-    //        canal.close()
-    //    }
-    //
-    // 3. Creați un map thread-safe pentru rezultate:
-    //    val rezultate = java.util.concurrent.ConcurrentHashMap<Int, Long>()
-    //
-    // 4. Lansați 4 corutine consumatoare:
-    //    val joburi = (1..4).map {
-    //        async {
-    //            for (n in canal) {
-    //                rezultate[n] = factorial(n)
-    //            }
-    //        }
-    //    }
-    //
-    // 5. Așteptați terminarea tuturor corutinelor:
-    //    joburi.forEach { it.await() }
-    //
-    // 6. Returnați rezultatele:
-    //    rezultate
-    TODO("De implementat: 4 corutine consumatoare calculează factorial din canal de lucru")
+    val canal = Channel<Int>(capacity = values.size)
+
+    launch {
+        for (v in values) {
+            canal.send(v)
+        }
+        canal.close()
+    }
+
+    val rezultate = java.util.concurrent.ConcurrentHashMap<Int, Long>()
+
+    val joburi = (1..4).map {
+        async {
+            for (n in canal) {
+                rezultate[n] = factorial(n)
+            }
+        }
+    }
+
+    joburi.forEach { it.await() }
+
+    rezultate
 }
 
 /**
@@ -62,9 +55,12 @@ suspend fun computeFactorials(values: List<Int>): Map<Int, Long> = coroutineScop
  * @return Valoarea n! ca Long
  */
 fun factorial(n: Int): Long {
-    // TODO("De implementat")
-    // Indiciu: folosiți fold sau o buclă for
-    // factorial(0) = 1
-    // factorial(n) = n * factorial(n-1)
-    TODO("De implementat: calculează n! iterativ sau recursiv")
+    if (n < 0) return 0
+    if (n == 0) return 1
+
+    var result = 1L
+    for (i in 1..n) {
+        result *= i
+    }
+    return result
 }
